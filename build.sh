@@ -1,2 +1,2 @@
 #!/bin/bash
-g++ -std=c++20 ./src2/main.cpp ./src2/color.cpp ./src2/patch.cpp ./src2/quilt.cpp -o ./quilt2
+g++ -std=c++20 ./src/main.cpp ./src/color.cpp ./src/patch.cpp ./src/quilt.cpp -o ./quilt
