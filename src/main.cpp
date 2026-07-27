@@ -15,12 +15,12 @@ struct Params {
     uint8_t pL = 0, pW = 0;
     bool qL_set = false, qW_set = false;
     bool pL_set = false, pW_set = false;
-    std::vector<uint8_t> styles;
+    std::vector<std::string> styles;
 };
 
 void printError(std::string_view msg);
 std::optional<uint8_t> parseUint8(std::string_view s);
-std::vector<uint8_t> parseStyleList(std::string_view s);
+std::vector<std::string> parseStyleList(std::string_view s);
 Params parseArgs(int argc, char** argv);
 
 int main(int argc, char* argv[]){
@@ -30,11 +30,14 @@ int main(int argc, char* argv[]){
     std::cout << "pL=" << +p.pL << " pW=" << +p.pW << "\n";
 
     std::cout << "styles: ";
-    for (auto s : p.styles) std::cout << +s << " ";
+    for (auto& s : p.styles){std::cout << s << " ";}
     std::cout << "\n";
     
     if(p.qL != 0 && p.pL != 0){
         quilt q(p.qL,p.qW,p.pL,p.pW);
+        for (auto& filename : p.styles){
+            q.addStyle(filename);
+        }
         q.generate();
         q.print();
     }
@@ -58,25 +61,22 @@ std::optional<uint8_t> parseUint8(std::string_view s){
     }
 }
 
-std::vector<uint8_t> parseStyleList(std::string_view s) {
-    std::vector<uint8_t> out;
-    if (s.empty()) {
+std::vector<std::string> parseStyleList(std::string_view s)
+{
+    std::vector<std::string> out;
+    if (s.empty()){
         printError("styles list cannot be empty");
         return out;
     }
     std::stringstream ss{std::string(s)};
     std::string item;
-    while (std::getline(ss, item, ',')) {
-        auto v = parseUint8(item);
-        if (!v) {
-            printError("Invalid number in styles list: " + item);
-            continue;
+    while (std::getline(ss, item, ',')){
+        if (!item.empty()){
+            out.push_back(item);
         }
-        out.push_back(*v);
     }
     return out;
 }
-
 
 Params parseArgs(int argc, char** argv) {
     Params params;
